@@ -1,0 +1,8 @@
+target/
+*.class
+.DS_Store
+.specstory/
+.vscode/
+*.iml
+.idea/
+ConnectionHealthDashboard-1.0.zip

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sailpoint PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<sailpoint>
+    <SPRight name="ConnectionHealthViewRight"
+             displayName="View Connection Health Dashboard">
+        <Description>
+            Allows a user to view the Connection Health Dashboard plugin page
+            and call its REST endpoints.
+        </Description>
+    </SPRight>
+</sailpoint>

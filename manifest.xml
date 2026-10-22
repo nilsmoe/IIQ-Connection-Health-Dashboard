@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Plugin PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Plugin name="ConnectionHealthDashboard"
+        displayName="Connection Health Dashboard"
+        version="1.0"
+        rightRequired="ConnectionHealthViewRight"
+        minSystemVersion="8.0"
+        certificationLevel="None">
+
+    <Attributes>
+        <Map>
+            <entry key="minUpgradableVersion" value="1.0"/>
+
+            <entry key="fullPage">
+                <value>
+                    <FullPage title="Connection Health"/>
+                </value>
+            </entry>
+
+            <entry key="restResources">
+                <value>
+                    <List>
+                        <String>com.example.plugin.health.ConnectionHealthResource</String>
+                    </List>
+                </value>
+            </entry>
+
+            <entry key="settings">
+                <value>
+                    <List>
+                        <Setting dataType="string"
+                                 name="applications"
+                                 label="Monitored Applications"
+                                 helpText="Comma-separated list of IIQ Application names to monitor (exact names as in Applications)."
+                                 defaultValue=""/>
+                        <Setting dataType="int"
+                                 name="cacheTtlMinutes"
+                                 label="Cache TTL (minutes)"
+                                 helpText="Serve cached health data when newer than this many minutes."
+                                 defaultValue="5"/>
+                    </List>
+                </value>
+            </entry>
+
+            <entry key="snippets">
+                <value>
+                    <List>
+                        <Snippet regexPattern=".*" rightRequired="ConnectionHealthViewRight">
+                            <Scripts>
+                                <String>ui/js/snippets/nav.js</String>
+                            </Scripts>
+                        </Snippet>
+                    </List>
+                </value>
+            </entry>
+        </Map>
+    </Attributes>
+</Plugin>

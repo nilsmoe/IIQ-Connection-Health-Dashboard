@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sailpoint PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<sailpoint>
+    <TaskDefinition
+        name="Connection Health Cache Task"
+        type="Generic"
+        executor="com.example.plugin.health.ConnectionHealthTask"
+        resultAction="Delete"
+        subType="task_item_type_generic"
+        template="false">
+
+        <Description>
+            Caches connection health status into the ConnectionHealthCache
+            Custom object for fast dashboard loads. Scheduled every 30 minutes
+            by "Connection Health Cache Schedule". Leave the applications
+            argument blank to use the plugin setting "Monitored Applications".
+        </Description>
+
+        <Signature>
+            <Inputs>
+                <Argument name="applications" type="string">
+                    <Description>
+                        Optional comma-separated Application names. When blank,
+                        uses the ConnectionHealthDashboard plugin setting.
+                    </Description>
+                </Argument>
+            </Inputs>
+        </Signature>
+
+        <Attributes>
+            <Map>
+                <entry key="applications" value=""/>
+            </Map>
+        </Attributes>
+    </TaskDefinition>
+
+    <TaskSchedule name="Connection Health Cache Schedule">
+        <CronExpressions>
+            <String>0 0/30 * * * ?</String>
+        </CronExpressions>
+        <Arguments>
+            <Map>
+                <entry key="executor" value="Connection Health Cache Task"/>
+                <entry key="launcher" value="Scheduler"/>
+            </Map>
+        </Arguments>
+    </TaskSchedule>
+</sailpoint>

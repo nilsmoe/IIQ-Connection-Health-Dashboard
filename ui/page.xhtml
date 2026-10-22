@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Connection Health Dashboard</title>
+</head>
+<body>
+    <div class="chd-container">
+        <div class="chd-header">
+            <h2>Connection Health Dashboard</h2>
+            <div class="chd-actions">
+                <div class="chd-auto-refresh">
+                    <input type="checkbox" id="autoRefresh"/>
+                    <label for="autoRefresh">Auto-refresh (5 min)</label>
+                </div>
+                <button type="button" class="btn btn-primary btn-sm" id="refreshBtn">
+                    Refresh
+                </button>
+            </div>
+        </div>
+        <div id="loading" class="chd-spinner">Loading health data...</div>
+        <div id="dashboard" class="chd-card-grid" style="display:none"></div>
+    </div>
+
+    <script>
+        (function () {
+            var ctx = (window.SailPoint &amp;&amp; SailPoint.CONTEXT_PATH)
+                ? SailPoint.CONTEXT_PATH
+                : '/identityiq';
+            var base = ctx + '/plugin/ConnectionHealthDashboard/ui/';
+            var css = document.createElement('link');
+            css.rel = 'stylesheet';
+            css.href = base + 'css/dashboard.css';
+            document.head.appendChild(css);
+            var js = document.createElement('script');
+            js.src = base + 'js/dashboard.js';
+            document.body.appendChild(js);
+        })();
+    </script>
+</body>
+</html>

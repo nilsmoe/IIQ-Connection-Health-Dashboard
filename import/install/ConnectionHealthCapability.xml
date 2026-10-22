@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sailpoint PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<sailpoint>
+    <Capability name="ConnectionHealthViewer"
+                displayName="Connection Health Viewer">
+        <Description>
+            Grants access to the Connection Health Dashboard plugin.
+        </Description>
+        <RightRefs>
+            <Reference class="sailpoint.object.SPRight"
+                       name="ConnectionHealthViewRight"/>
+        </RightRefs>
+    </Capability>
+</sailpoint>

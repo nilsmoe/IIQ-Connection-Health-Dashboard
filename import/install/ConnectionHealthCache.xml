@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sailpoint PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<sailpoint>
+    <Custom name="ConnectionHealthCache">
+        <Description>
+            Cache for Connection Health Dashboard results.
+            Populated by the Connection Health Cache Task and the REST endpoint.
+        </Description>
+        <Attributes>
+            <Map>
+                <entry key="healthData">
+                    <value>
+                        <List/>
+                    </value>
+                </entry>
+                <entry key="lastUpdated"/>
+            </Map>
+        </Attributes>
+    </Custom>
+</sailpoint>

@@ -1,0 +1,63 @@
+import sailpoint.object.Application;
+import sailpoint.object.ApplicationScorecard;
+import sailpoint.object.Filter;
+import sailpoint.object.QueryOptions;
+import sailpoint.object.TaskItemDefinition;
+import sailpoint.object.TaskResult;
+import java.util.List;
+
+/**
+ * Diagnostic: why Connection Health shows "Never" after aggregations.
+ * Paste into Debug → BeanShell Console and edit appNames.
+ */
+
+String[] appNames = {
+    "HR-SAP-Mock",
+    "lab.cloudshift.no"
+};
+
+for (int i = 0; i < appNames.length; i++) {
+    String appName = appNames[i];
+    System.out.println("======== " + appName + " ========");
+
+    Application app = context.getObjectByName(Application.class, appName);
+    if (app == null) {
+        System.out.println("Application NOT FOUND");
+        continue;
+    }
+    System.out.println("type=" + app.getType());
+    System.out.println("acctAggregationStart="
+            + app.getAttributeValue(Application.ATTR_ACCT_AGGREGATION_START));
+    System.out.println("acctAggregationEnd="
+            + app.getAttributeValue(Application.ATTR_ACCT_AGGREGATION_END));
+    ApplicationScorecard sc = app.getScorecard();
+    System.out.println("scorecard.totalLinks="
+            + (sc == null ? "null" : sc.getTotalLinks()));
+
+    QueryOptions qo = new QueryOptions();
+    qo.addFilter(Filter.eq("type", TaskItemDefinition.Type.AccountAggregation));
+    qo.addFilter(Filter.eq("targetName", appName));
+    qo.setResultLimit(5);
+    List byTarget = context.getObjects(TaskResult.class, qo);
+    System.out.println("TaskResults targetName match: "
+            + (byTarget == null ? 0 : byTarget.size()));
+
+    QueryOptions recent = new QueryOptions();
+    recent.addOrdering("launched", false);
+    recent.setResultLimit(15);
+    List all = context.getObjects(TaskResult.class, recent);
+    System.out.println("Last 15 TaskResults (any type):");
+    if (all != null) {
+        for (int j = 0; j < all.size(); j++) {
+            TaskResult tr = (TaskResult) all.get(j);
+            System.out.println("  name=" + tr.getName()
+                    + " type=" + tr.getType()
+                    + " targetName=" + tr.getTargetName()
+                    + " completed=" + tr.getCompleted()
+                    + " applications=" + tr.getAttribute("applications")
+                    + " total=" + tr.getAttribute("total"));
+        }
+    }
+}
+
+return "done — copy the console output if status is still wrong";
