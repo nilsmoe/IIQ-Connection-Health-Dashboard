@@ -2,7 +2,7 @@
 <!DOCTYPE Plugin PUBLIC "sailpoint.dtd" "sailpoint.dtd">
 <Plugin name="ConnectionHealthDashboard"
         displayName="Connection Health Dashboard"
-        version="1.0"
+        version="1.4"
         rightRequired="ConnectionHealthViewRight"
         minSystemVersion="8.0"
         certificationLevel="None">
@@ -25,13 +25,17 @@
                 </value>
             </entry>
 
+            <!--
+              Simple settings must be string / int / boolean.
+              Application checkboxes are provided by settingsPage (config.xhtml).
+            -->
             <entry key="settings">
                 <value>
                     <List>
                         <Setting dataType="string"
                                  name="applications"
                                  label="Monitored Applications"
-                                 helpText="Comma-separated list of IIQ Application names to monitor (exact names as in Applications)."
+                                 helpText="Comma-separated application names. Managed by the Configure checkbox page."
                                  defaultValue=""/>
                         <Setting dataType="int"
                                  name="cacheTtlMinutes"
@@ -41,6 +45,8 @@
                     </List>
                 </value>
             </entry>
+
+            <entry key="settingsPage" value="config.xhtml"/>
 
             <entry key="snippets">
                 <value>

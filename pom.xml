@@ -7,7 +7,7 @@
 
     <groupId>com.example.plugin</groupId>
     <artifactId>connection-health-dashboard</artifactId>
-    <version>1.0</version>
+    <version>1.4</version>
     <packaging>jar</packaging>
     <name>Connection Health Dashboard Plugin</name>
 
@@ -17,7 +17,7 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <plugin.zip.name>ConnectionHealthDashboard-1.0</plugin.zip.name>
+        <plugin.zip.name>ConnectionHealthDashboard-1.4</plugin.zip.name>
     </properties>
 
     <dependencies>

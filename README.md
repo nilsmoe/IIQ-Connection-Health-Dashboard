@@ -64,7 +64,7 @@ cd ConnectionHealthDashboard
 mvn clean package
 ```
 
-Plugin ZIP: `target/ConnectionHealthDashboard-1.0.zip`
+Plugin ZIP: `target/ConnectionHealthDashboard-1.4.zip`
 
 ZIP contents (IIQ format):
 
@@ -77,7 +77,7 @@ ZIP contents (IIQ format):
 
 1. Log in as **spadmin**
 2. Go to **Gear → Plugins**
-3. Click **New** → upload `ConnectionHealthDashboard-1.0.zip`
+3. Click **New** → upload `ConnectionHealthDashboard-1.4.zip`
 4. Grant the **ConnectionHealthViewer** capability (or the **ConnectionHealthViewRight** SPRight) to users
 5. Open **Gear → Connection Health**, or go to:
    `/identityiq/plugins/pluginPage.jsf?pn=ConnectionHealthDashboard`
@@ -88,7 +88,7 @@ ZIP contents (IIQ format):
 
 | Setting | Description |
 |---------|-------------|
-| Monitored Applications | Comma-separated IIQ Application names (exact names). Required — there is no demo default list. |
+| Monitored Applications | Checkbox list of all IIQ Applications (tick / untick, then Save). |
 | Cache TTL (minutes) | Serve cached results newer than this (default 5). Cache is skipped when the app list changes. |
 
 ### Cache task
@@ -98,7 +98,7 @@ Schedule: **Connection Health Cache Schedule** (every 30 minutes)
 
 Leave the task `applications` argument blank to use the plugin setting. A non-empty task argument overrides the plugin setting.
 
-After changing Monitored Applications, click **Refresh** on the dashboard (or wait for TTL). If an old TaskDefinition still has hardcoded apps, clear that argument or re-import the task XML.
+After changing Monitored Applications, click **Refresh** on the dashboard (or wait for TTL). Re-select apps once after upgrading from the old comma-separated setting.
 
 ## Status Color Logic
 

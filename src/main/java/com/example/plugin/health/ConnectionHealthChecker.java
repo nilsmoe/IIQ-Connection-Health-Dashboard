@@ -33,21 +33,143 @@ public final class ConnectionHealthChecker {
     }
 
     /**
-     * Parses a comma-separated application list. Empty/null input yields an
-     * empty list (no hardcoded defaults).
+     * Parses a comma-separated application list (names or IDs).
+     * Also accepts Java {@code List#toString()} form {@code [id1, id2]}.
      */
     public static List<String> parseApplicationNames(String csv) {
         List<String> names = new ArrayList<>();
         if (Util.isNullOrEmpty(csv)) {
             return names;
         }
-        for (String part : csv.split(",")) {
-            String trimmed = part.trim();
+        String cleaned = csv.trim();
+        if (cleaned.startsWith("[") && cleaned.endsWith("]") && cleaned.length() >= 2) {
+            cleaned = cleaned.substring(1, cleaned.length() - 1);
+        }
+        for (String part : cleaned.split(",")) {
+            String trimmed = cleanToken(part);
             if (!Util.isNullOrEmpty(trimmed)) {
                 names.add(trimmed);
             }
         }
         return names;
+    }
+
+    /**
+     * Resolves monitored application <em>names</em> from settingsForm values.
+     * Plugin Application fields often persist object IDs (or a List.toString
+     * of IDs); this maps them to Application names via the context.
+     */
+    public static List<String> resolveApplicationNames(
+            SailPointContext context,
+            List<?> multiObjects,
+            List<String> multiValues,
+            String csvFallback)
+            throws GeneralException {
+        List<String> fromObjects = namesFromObjects(multiObjects);
+        if (!fromObjects.isEmpty()) {
+            return fromObjects;
+        }
+
+        List<String> tokens = normalizeNameList(multiValues);
+        if (tokens.isEmpty()) {
+            tokens = parseApplicationNames(csvFallback);
+        }
+        if (context == null) {
+            return tokens;
+        }
+
+        List<String> names = new ArrayList<>();
+        for (String token : tokens) {
+            Application app = findApplication(context, token);
+            names.add(app != null ? app.getName() : token);
+        }
+        return names;
+    }
+
+    public static List<String> resolveApplicationNames(
+            List<?> multiObjects,
+            List<String> multiValues,
+            String csvFallback) {
+        List<String> fromObjects = namesFromObjects(multiObjects);
+        if (!fromObjects.isEmpty()) {
+            return fromObjects;
+        }
+        List<String> fromMulti = normalizeNameList(multiValues);
+        if (!fromMulti.isEmpty()) {
+            return fromMulti;
+        }
+        return parseApplicationNames(csvFallback);
+    }
+
+    public static List<String> normalizeNameList(List<String> values) {
+        List<String> names = new ArrayList<>();
+        if (values == null) {
+            return names;
+        }
+        // One element that is itself "[id1, id2, id3]"
+        if (values.size() == 1) {
+            String only = values.get(0);
+            if (only != null && only.indexOf('[') >= 0) {
+                return parseApplicationNames(only);
+            }
+        }
+        for (String value : values) {
+            String cleaned = cleanToken(value);
+            if (!Util.isNullOrEmpty(cleaned)) {
+                names.add(cleaned);
+            }
+        }
+        return names;
+    }
+
+    public static List<String> namesFromObjects(List<?> values) {
+        List<String> names = new ArrayList<>();
+        if (values == null) {
+            return names;
+        }
+        for (Object value : values) {
+            if (value instanceof Application) {
+                String name = ((Application) value).getName();
+                if (!Util.isNullOrEmpty(name)) {
+                    names.add(name);
+                }
+            }
+        }
+        return names;
+    }
+
+    /** Looks up by name first, then by IIQ object id. */
+    public static Application findApplication(
+            SailPointContext context, String nameOrId)
+            throws GeneralException {
+        String key = cleanToken(nameOrId);
+        if (context == null || Util.isNullOrEmpty(key)) {
+            return null;
+        }
+        Application app = context.getObjectByName(Application.class, key);
+        if (app != null) {
+            return app;
+        }
+        return context.getObjectById(Application.class, key);
+    }
+
+    static String cleanToken(String token) {
+        if (token == null) {
+            return null;
+        }
+        String cleaned = token.trim();
+        while (cleaned.startsWith("[")) {
+            cleaned = cleaned.substring(1).trim();
+        }
+        while (cleaned.endsWith("]")) {
+            cleaned = cleaned.substring(0, cleaned.length() - 1).trim();
+        }
+        if (cleaned.length() >= 2
+                && ((cleaned.startsWith("\"") && cleaned.endsWith("\""))
+                || (cleaned.startsWith("'") && cleaned.endsWith("'")))) {
+            cleaned = cleaned.substring(1, cleaned.length() - 1).trim();
+        }
+        return cleaned;
     }
 
     /** Canonical form used for cache keys (trimmed, comma-joined). */
@@ -74,16 +196,16 @@ public final class ConnectionHealthChecker {
             throws GeneralException {
 
         Map<String, Object> health = new HashMap<>();
-        health.put("appName", appName);
-
-        Application app = context.getObjectByName(Application.class, appName);
+        Application app = findApplication(context, appName);
         if (app == null) {
+            health.put("appName", cleanToken(appName));
             health.put("appType", "Unknown");
             health.put("status", "RED");
             health.put("error", "Application not found in IIQ.");
             return health;
         }
 
+        health.put("appName", app.getName());
         health.put("appType", resolveAppType(app));
 
         TaskResult tr = findLatestAccountAggregation(context, appName);

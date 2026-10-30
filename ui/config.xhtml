@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Connection Health Settings</title>
+</head>
+<body>
+    <div class="chd-settings">
+        <h2>Connection Health Settings</h2>
+        <p class="chd-settings-help">
+            Tick the applications to show on the dashboard. Untick to remove them.
+        </p>
+
+        <div class="chd-settings-toolbar">
+            <input type="search" id="appFilter" placeholder="Filter applications..." />
+            <button type="button" class="btn btn-default btn-sm" id="selectAllBtn">Select all</button>
+            <button type="button" class="btn btn-default btn-sm" id="clearAllBtn">Clear all</button>
+            <span id="selectionCount" class="chd-selection-count"></span>
+        </div>
+
+        <div id="appList" class="chd-app-list">Loading applications...</div>
+
+        <div class="chd-settings-field">
+            <label for="cacheTtlMinutes">Cache TTL (minutes)</label>
+            <input type="number" id="cacheTtlMinutes" min="1" max="1440" value="5"/>
+            <p class="chd-settings-help">Serve cached health data when newer than this many minutes.</p>
+        </div>
+
+        <div class="chd-settings-actions">
+            <span id="settingsStatus" class="chd-settings-status"></span>
+            <button type="button" class="btn btn-primary" id="saveSettingsBtn">Save</button>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            var ctx = (window.SailPoint &amp;&amp; SailPoint.CONTEXT_PATH)
+                ? SailPoint.CONTEXT_PATH
+                : '/identityiq';
+            var base = ctx + '/plugin/ConnectionHealthDashboard/ui/';
+            var css = document.createElement('link');
+            css.rel = 'stylesheet';
+            css.href = base + 'css/settings.css';
+            document.head.appendChild(css);
+            var js = document.createElement('script');
+            js.src = base + 'js/settings.js';
+            document.body.appendChild(js);
+        })();
+    </script>
+</body>
+</html>

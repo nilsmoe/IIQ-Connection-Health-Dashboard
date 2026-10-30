@@ -130,8 +130,8 @@
                 }
                 if (data.length === 0) {
                     showError(
-                        'No applications configured. Set Monitored Applications '
-                        + 'under Gear → Plugins → Connection Health Dashboard → Configure.'
+                        'No applications selected. Choose apps under '
+                        + 'Gear → Plugins → Connection Health Dashboard → Configure.'
                     );
                     return;
                 }

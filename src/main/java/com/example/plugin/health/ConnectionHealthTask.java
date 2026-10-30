@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import sailpoint.api.SailPointContext;
+import sailpoint.object.Application;
 import sailpoint.object.Attributes;
 import sailpoint.object.Custom;
 import sailpoint.object.TaskResult;
@@ -20,7 +21,7 @@ import sailpoint.tools.Util;
  *
  * Application list resolution order:
  * 1. Task argument {@code applications} (if non-empty)
- * 2. Plugin setting {@code applications}
+ * 2. Plugin settingsForm multi Application setting {@code applications}
  */
 public class ConnectionHealthTask extends AbstractTaskExecutor {
 
@@ -33,8 +34,7 @@ public class ConnectionHealthTask extends AbstractTaskExecutor {
                         Attributes<String, Object> args)
             throws Exception {
 
-        String appList = resolveApplicationsCsv(args);
-        List<String> appNames = ConnectionHealthChecker.parseApplicationNames(appList);
+        List<String> appNames = resolveApplicationNames(context, args);
         String appsKey = ConnectionHealthChecker.canonicalApplications(appNames);
         List<Map<String, Object>> healthList = new ArrayList<>();
 
@@ -62,33 +62,73 @@ public class ConnectionHealthTask extends AbstractTaskExecutor {
         result.setCompletionStatus(TaskResult.CompletionStatus.Success);
     }
 
-    private static String resolveApplicationsCsv(Attributes<String, Object> args) {
-        String appList = null;
-        if (args != null) {
-            appList = args.getString("applications");
-            if (Util.isNullOrEmpty(appList)) {
-                Object multi = args.get("applications");
-                if (multi instanceof List) {
-                    List<?> values = (List<?>) multi;
-                    List<String> joined = new ArrayList<>();
-                    for (Object value : values) {
-                        if (value != null && !Util.isNullOrEmpty(value.toString())) {
-                            joined.add(value.toString().trim());
-                        }
-                    }
-                    if (!joined.isEmpty()) {
-                        appList = String.join(",", joined);
-                    }
+    private static List<String> resolveApplicationNames(
+            SailPointContext context, Attributes<String, Object> args) {
+
+        List<String> fromArgs = namesFromTaskArgs(args);
+        if (!fromArgs.isEmpty()) {
+            return fromArgs;
+        }
+
+        List<?> multiObjects = null;
+        try {
+            multiObjects = PluginBaseHelper.getSettingMultiObject(
+                    context,
+                    ConnectionHealthResource.PLUGIN_NAME,
+                    ConnectionHealthResource.SETTING_APPLICATIONS);
+        } catch (Exception ignored) {
+            // Fall through to multi-string / CSV
+        }
+
+        try {
+            return ConnectionHealthChecker.resolveApplicationNames(
+                    context,
+                    multiObjects,
+                    PluginBaseHelper.getSettingMultiString(
+                            ConnectionHealthResource.PLUGIN_NAME,
+                            ConnectionHealthResource.SETTING_APPLICATIONS),
+                    PluginBaseHelper.getSettingString(
+                            ConnectionHealthResource.PLUGIN_NAME,
+                            ConnectionHealthResource.SETTING_APPLICATIONS));
+        } catch (Exception e) {
+            return ConnectionHealthChecker.parseApplicationNames(
+                    PluginBaseHelper.getSettingString(
+                            ConnectionHealthResource.PLUGIN_NAME,
+                            ConnectionHealthResource.SETTING_APPLICATIONS));
+        }
+    }
+
+    private static List<String> namesFromTaskArgs(Attributes<String, Object> args) {
+        List<String> names = new ArrayList<>();
+        if (args == null) {
+            return names;
+        }
+
+        Object multi = args.get("applications");
+        if (multi instanceof List) {
+            for (Object value : (List<?>) multi) {
+                String name = nameFromValue(value);
+                if (!Util.isNullOrEmpty(name)) {
+                    names.add(name);
                 }
+            }
+            if (!names.isEmpty()) {
+                return names;
             }
         }
 
-        if (Util.isNullOrEmpty(appList)) {
-            appList = PluginBaseHelper.getSettingString(
-                    ConnectionHealthResource.PLUGIN_NAME,
-                    ConnectionHealthResource.SETTING_APPLICATIONS);
+        return ConnectionHealthChecker.parseApplicationNames(args.getString("applications"));
+    }
+
+    private static String nameFromValue(Object value) {
+        if (value == null) {
+            return null;
         }
-        return appList;
+        if (value instanceof Application) {
+            return ((Application) value).getName();
+        }
+        String text = value.toString().trim();
+        return Util.isNullOrEmpty(text) ? null : text;
     }
 
     @Override
