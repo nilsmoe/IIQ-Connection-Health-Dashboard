@@ -2,7 +2,7 @@
 <!DOCTYPE Plugin PUBLIC "sailpoint.dtd" "sailpoint.dtd">
 <Plugin name="ConnectionHealthDashboard"
         displayName="Connection Health Dashboard"
-        version="1.4"
+        version="1.5"
         rightRequired="ConnectionHealthViewRight"
         minSystemVersion="8.0"
         certificationLevel="None">
@@ -14,6 +14,13 @@
             <entry key="fullPage">
                 <value>
                     <FullPage title="Connection Health"/>
+                </value>
+            </entry>
+            <entry key="taskExecutors">
+            <value>
+                    <List>
+                        <String>com.example.plugin.health.ConnectionHealthTask</String>
+                    </List>
                 </value>
             </entry>
 
