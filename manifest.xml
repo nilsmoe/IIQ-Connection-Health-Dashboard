@@ -2,7 +2,7 @@
 <!DOCTYPE Plugin PUBLIC "sailpoint.dtd" "sailpoint.dtd">
 <Plugin name="ConnectionHealthDashboard"
         displayName="Connection Health Dashboard"
-        version="1.5"
+        version="1.6"
         rightRequired="ConnectionHealthViewRight"
         minSystemVersion="8.0"
         certificationLevel="None">

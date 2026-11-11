@@ -64,7 +64,7 @@ cd ConnectionHealthDashboard
 mvn clean package
 ```
 
-Plugin ZIP: `target/ConnectionHealthDashboard-1.4.zip`
+Plugin ZIP: `target/ConnectionHealthDashboard-1.6.zip`
 
 ZIP contents (IIQ format):
 
@@ -77,7 +77,7 @@ ZIP contents (IIQ format):
 
 1. Log in as **spadmin**
 2. Go to **Gear → Plugins**
-3. Click **New** → upload `ConnectionHealthDashboard-1.4.zip`
+3. Click **New** → upload `ConnectionHealthDashboard-1.6.zip`
 4. Grant the **ConnectionHealthViewer** capability (or the **ConnectionHealthViewRight** SPRight) to users
 5. Open **Gear → Connection Health**, or go to:
    `/identityiq/plugins/pluginPage.jsf?pn=ConnectionHealthDashboard`
@@ -97,6 +97,8 @@ Task definition: **Connection Health Cache Task**
 Schedule: **Connection Health Cache Schedule** (every 30 minutes)
 
 Leave the task `applications` argument blank to use the plugin setting. A non-empty task argument overrides the plugin setting.
+
+The TaskDefinition must include attribute `pluginName=ConnectionHealthDashboard` so IIQ loads the executor from the plugin classloader. Without that, Quartz fails with `ClassNotFoundException: ConnectionHealthTask`.
 
 After changing Monitored Applications, click **Refresh** on the dashboard (or wait for TTL). Re-select apps once after upgrading from the old comma-separated setting.
 

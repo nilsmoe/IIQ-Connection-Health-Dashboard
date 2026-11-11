@@ -29,6 +29,8 @@
 
         <Attributes>
             <Map>
+                <!-- Required so IIQ loads the executor via the plugin classloader -->
+                <entry key="pluginName" value="ConnectionHealthDashboard"/>
                 <entry key="applications" value=""/>
             </Map>
         </Attributes>
